@@ -24,10 +24,10 @@ dist-ssr
 *.sw?
 
 #backend public image
-./data/notesImage/*
+/data/notesImage/
 
 #dotenv
-./.env
+.env
 
 #HTTPS CA
-./config
+/config/
