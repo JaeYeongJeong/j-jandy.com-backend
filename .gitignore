@@ -23,8 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
-#backend public image
-/data/notesImage/
+# Ignore all files inside the data/notesImage directory
+/data/notesImage/*
+
+# But don't ignore the directory itself
+!/data/notesImage/
 
 #dotenv
 .env
