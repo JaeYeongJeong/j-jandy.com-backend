@@ -10,11 +10,12 @@ import { createSessionConfig } from './config/config.js';
 import mongoDb, { mongodbSessionStore } from './data/mongodb.js';
 
 const PORT = process.env.PORT || 3000;
+const frontendUrl = process.env.FRONTENDURL || 'https://localhost:5173';
 
 const app = express();
 
 app.use(cors({
-  origin: 'https://localhost:5173',
+  origin: frontendUrl,
   credentials: true,
 }));
 
@@ -24,7 +25,7 @@ app.use(express.static('./data/notesImage'));
 app.use(session(createSessionConfig(mongodbSessionStore)));
 
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://localhost:5173');
+  res.setHeader('Access-Control-Allow-Origin', frontendUrl);
   res.setHeader(
     'Access-Control-Allow-Methods',
     'GET, POST, PUT, PATCH, DELETE, OPTIONS'
