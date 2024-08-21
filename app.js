@@ -10,7 +10,7 @@ import { createSessionConfig } from './config/config.js';
 import mongoDb, { mongodbSessionStore } from './data/mongodb.js';
 
 const PORT = process.env.PORT || 3000;
-const frontendUrl = process.env.FRONTENDURL || 'https://localhost:5173';
+const frontendUrl = process.env.FRONTEND_URL || 'https://localhost:5173';
 
 const app = express();
 
