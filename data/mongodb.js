@@ -30,7 +30,7 @@ const getDb = () => {
 const MongoDBStore = mongodbStore(session);
 
 const mongodbSessionStore = new MongoDBStore({
-  uri: 'mongodb://localhost:27017',
+  uri: mongodbUrl,
   databaseName: 'portfolio',
   collection: 'session',
 });
