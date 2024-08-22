@@ -31,12 +31,6 @@ const postLogin = async (req, res) => {
     req.session.user = { id: user.user_id, name: user.name };
     req.session.isAuthenticated = true;
 
-    res.cookie('testCookie', 'testValue', {
-      httpOnly: true,
-      secure: true, // HTTPS가 아닌 경우 false로 설정
-      sameSite: 'none'
-    });
-
     req.session.save((err) => {
       if (err) {
         return res.status(500).json({ message: 'Session save error' });
