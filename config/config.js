@@ -12,7 +12,7 @@ const createSessionConfig = (session_DB) => {
       maxAge: 1000 * 60 * 60 * 24,
       secure: false,
       httpOnly: true,
-      sameSite: 'None',
+      sameSite: 'lax',
     },
   };
 }
