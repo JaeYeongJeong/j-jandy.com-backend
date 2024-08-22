@@ -14,6 +14,8 @@ const frontendUrl = process.env.FRONTEND_URL || 'https://localhost:5173';
 
 const app = express();
 
+app.use(session(createSessionConfig(mongodbSessionStore)));
+
 app.use(cors({
   origin: frontendUrl,
   credentials: true,
@@ -22,7 +24,6 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(express.static('./data/notesImage'));
 
-app.use(session(createSessionConfig(mongodbSessionStore)));
 
 app.use((req, res, next) => {
   // res.setHeader('Access-Control-Allow-Origin', frontendUrl);
