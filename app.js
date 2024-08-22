@@ -25,7 +25,7 @@ app.use(express.static('./data/notesImage'));
 app.use(session(createSessionConfig(mongodbSessionStore)));
 
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', frontendUrl);
+  // res.setHeader('Access-Control-Allow-Origin', frontendUrl);
   res.setHeader(
     'Access-Control-Allow-Methods',
     'GET, POST, PUT, PATCH, DELETE, OPTIONS'
@@ -34,7 +34,12 @@ app.use((req, res, next) => {
     'Access-Control-Allow-Headers',
     'X-Requested-With,content-type'
   );
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  // res.setHeader('Access-Control-Allow-Credentials', 'true');
+  next();
+});
+
+app.use((req, res, next) => {
+  console.log('Session:', req.session);
   next();
 });
 
