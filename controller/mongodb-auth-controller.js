@@ -30,22 +30,15 @@ const postLogin = async (req, res) => {
 
     req.session.user = { id: user.user_id, name: user.name };
     req.session.isAuthenticated = true;
-    console.log('Session after setting user:', req.session);
 
-    res.cookie('testCookie', 'testValue', {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None'
+    req.session.save((err) => {
+      if (err) {
+        return res.status(500).json({ message: 'Session save error' });
+      }
+
+      console.log('Session after setting user:', req.session);
+      return res.status(200).json({ message: 'Login successful' });
     });
-
-    return res.status(200).json({ message: 'Login successful' });
-    // req.session.save((err) => {
-    //   if (err) {
-    //     return res.status(500).json({ message: 'Session save error' });
-    //   }
-
-    //   return res.status(200).json({ message: 'Login successful' });
-    // });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Login failed' });
