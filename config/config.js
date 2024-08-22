@@ -9,10 +9,11 @@ const createSessionConfig = (session_DB) => {
     saveUninitialized: false,
     store: session_DB,
     cookie: {
+
       maxAge: 1000 * 60 * 60 * 24,
       secure: true,
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'None',
     },
   };
 }
