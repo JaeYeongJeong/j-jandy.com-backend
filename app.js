@@ -2,8 +2,6 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import cors from 'cors';
-// import fs from 'fs';
-// import https from 'https';
 import noteRoutes from './route/note.js';
 import authRoutes from './route/auth.js';
 import { createSessionConfig } from './config/config.js';
@@ -16,10 +14,10 @@ const app = express();
 
 app.use(session(createSessionConfig(mongodbSessionStore)));
 
-app.use(cors({
-  origin: frontendUrl,
-  credentials: true,
-}));
+// app.use(cors({
+//   origin: frontendUrl,
+//   credentials: true,
+// }));
 
 app.use(bodyParser.json());
 app.use(express.static('./data/notesImage'));
