@@ -12,6 +12,7 @@ const frontendUrl = process.env.FRONTEND_URL || 'https://localhost:5173';
 
 const app = express();
 
+app.set('trust proxy', 1);
 app.use(session(createSessionConfig(mongodbSessionStore)));
 
 // app.use(cors({
