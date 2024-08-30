@@ -2,9 +2,12 @@ import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
 import path from 'path';
+import fs from 'fs';
 import dotenv from 'dotenv';
 
-dotenv.config();
+if (fs.existsSync('.env')) {
+  dotenv.config();
+}
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,

@@ -1,8 +1,11 @@
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
+import fs from 'fs';
 import mongoDb from '../data/mongodb.js';
 
-dotenv.config();
+if (fs.existsSync('.env')) {
+  dotenv.config();
+}
 
 const getSession = (req, res) => {
   if (req.session.isAuthenticated) {
@@ -36,7 +39,6 @@ const postLogin = async (req, res) => {
         return res.status(500).json({ message: 'Session save error' });
       }
 
-      console.log('Session after setting user:', req.session);
       return res.status(200).json({ message: 'Login successful' });
     });
   } catch (error) {
