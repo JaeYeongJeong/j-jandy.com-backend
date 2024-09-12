@@ -1,15 +1,17 @@
 import mongodb from 'mongodb';
 import session from 'express-session';
 import mongodbStore from 'connect-mongodb-session';
+import fs from 'fs';
+import dotenv from 'dotenv';
+
+if (fs.existsSync('.env')) {
+  dotenv.config();
+}
 
 const MongoClient = mongodb.MongoClient;
 
 let database;
-let mongodbUrl = 'mongodb://localhost:27017';
-
-if (process.env.MONGODB_URL) {
-  mongodbUrl = process.env.MONGODB_URL;
-}
+const mongodbUrl = process.env.MONGODB_URL;
 
 const connectMongoDb = async () => {
   try {

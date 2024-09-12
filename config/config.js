@@ -1,6 +1,9 @@
+import fs from 'fs';
 import dotenv from 'dotenv';
 
-dotenv.config();
+if (fs.existsSync('.env')) {
+  dotenv.config();
+}
 
 const createSessionConfig = (session_DB) => {
   return {

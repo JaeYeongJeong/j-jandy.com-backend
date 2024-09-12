@@ -1,18 +1,13 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import mongoDb from '../data/mongodb.js';
 import { ObjectId } from 'mongodb';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { deleteImageFromS3 } from '../middlewares/multer-s3.js';
 
 const getNotes = async (req, res) => {
   try {
     const notes = await mongoDb.getDb().collection('notes').find().toArray();
 
     if (!notes.length) {
-      return res.status(404).json({ message: `Notes not found.` });
+      return res.status(200).json({ message: `Notes not found.` });
     }
 
     res.json({
@@ -45,7 +40,7 @@ const getNotesSearch = async (req, res) => {
     }).toArray();
 
     if (!notes.length) {
-      return res.status(404).json({ message: `For the ${searchQuery}, no note could be found.` });
+      return res.status(200).json({ message: `For the ${searchQuery}, no note could be found.` });
     }
 
     res.json({
@@ -90,7 +85,7 @@ const getNote = async (req, res) => {
 
 const postNote = async (req, res) => {
   const data = req.body;
-  const imageFile = req.file?.filename;
+  const imageFile = req.file?.key;
 
   try {
     const result = await mongoDb.getDb().collection('notes').insertOne({
@@ -117,6 +112,9 @@ const patchNote = async (req, res) => {
   const id = req.params.id;
 
   try {
+    const existingNote = await mongoDb.getDb().collection('notes').findOne({ _id: new ObjectId(req.params.id) });
+    const existingImage = existingNote?.image;
+
     const updateData = {
       title: data.title,
       description: data.description,
@@ -124,8 +122,8 @@ const patchNote = async (req, res) => {
       date: new Date(),
     };
 
-    if (req.file?.filename) {
-      updateData.image = req.file.filename;
+    if (req.file?.key) {
+      updateData.image = req.file.key;
     }
 
     const result = await mongoDb.getDb().collection('notes').updateOne(
@@ -137,6 +135,7 @@ const patchNote = async (req, res) => {
       return res.status(404).json({ message: `No document found with id ${id}` });
     }
 
+    await deleteImageFromS3(existingImage);
     res.json({ editedId: id });
   } catch (error) {
     console.error(error);
@@ -163,16 +162,7 @@ const deleteNote = async (req, res) => {
     }
 
     if (note.image) {
-      const imageFile = note.image;
-      const imagePath = path.join(__dirname, '../data/notesImage/', imageFile);
-
-      if (fs.existsSync(imagePath)) {
-        try {
-          fs.unlinkSync(imagePath);
-        } catch (error) {
-          console.error('Failed to delete image file:', error);
-        }
-      }
+      await deleteImageFromS3(note.image);
     }
 
     res.json({ deleteId: id });
