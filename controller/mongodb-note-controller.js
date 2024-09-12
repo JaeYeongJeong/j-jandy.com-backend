@@ -7,7 +7,7 @@ const getNotes = async (req, res) => {
     const notes = await mongoDb.getDb().collection('notes').find().toArray();
 
     if (!notes.length) {
-      return res.status(404).json({ message: `Notes not found.` });
+      return res.status(200).json({ message: `Notes not found.` });
     }
 
     res.json({
@@ -40,7 +40,7 @@ const getNotesSearch = async (req, res) => {
     }).toArray();
 
     if (!notes.length) {
-      return res.status(404).json({ message: `For the ${searchQuery}, no note could be found.` });
+      return res.status(200).json({ message: `For the ${searchQuery}, no note could be found.` });
     }
 
     res.json({
@@ -135,7 +135,7 @@ const patchNote = async (req, res) => {
       return res.status(404).json({ message: `No document found with id ${id}` });
     }
 
-    deleteImageFromS3(existingImage);
+    await deleteImageFromS3(existingImage);
     res.json({ editedId: id });
   } catch (error) {
     console.error(error);
