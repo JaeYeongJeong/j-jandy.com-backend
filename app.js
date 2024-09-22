@@ -39,6 +39,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 //conncet mongoDb
 await mongoDb.connectMongoDb().then(() => {
   app.use(authRoutes);
