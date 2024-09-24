@@ -24,7 +24,6 @@ app.use(session(createSessionConfig(mongodbSessionStore)));
 app.use(bodyParser.json());
 app.use(express.static('./data/notesImage'));
 
-
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', frontendUrl);
   res.setHeader(

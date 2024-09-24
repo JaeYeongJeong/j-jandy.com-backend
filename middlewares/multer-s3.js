@@ -17,6 +17,17 @@ const s3 = new S3Client({
   },
 });
 
+const convertSafeFilename = (filename) => {
+  filename = filename.replace(/ /g, "");
+  filename = filename.replace(/#/g, "");
+  filename = filename.replace(/\?/g, "");
+  filename = filename.replace(/&/g, "");
+  filename = filename.replace(/=/g, "");
+  filename = filename.replace(/\+/g, "");
+
+  return filename;
+}
+
 
 const upload = multer({
   storage: multerS3({
@@ -28,7 +39,8 @@ const upload = multer({
     key: (req, file, cb) => {
       const ext = path.extname(file.originalname);
       const filename = `${Date.now().toString()}${path.basename(file.originalname, ext)}${ext}`;
-      cb(null, `uploads/${filename}`);
+      const safeFilename = convertSafeFilename(filename);
+      cb(null, `uploads/${safeFilename}`);
     },
   }),
   fileFilter: (req, file, cb) => {

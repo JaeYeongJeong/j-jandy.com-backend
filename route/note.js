@@ -1,7 +1,6 @@
 import express from 'express';
 import { sessionIsAuthenticated } from '../middlewares/auth-protection.js';
 import { deleteNote, getNote, getNotes, getNotesSearch, patchNote, postNote } from '../controller/mongodb-note-controller.js';
-import { uploadImage } from '../middlewares/multer.js';
 import { uploadImageS3 } from '../middlewares/multer-s3.js';
 
 const router = express.Router();
