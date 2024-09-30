@@ -11,9 +11,9 @@ router.get('/notes/search', getNotesSearch);
 
 router.get('/notes/:id', getNote);
 
-router.post('/notes', uploadImageS3, sessionIsAuthenticated, postNote)
+router.post('/notes', sessionIsAuthenticated, uploadImageS3, postNote)
 
-router.patch('/notes/:id', uploadImageS3, sessionIsAuthenticated, patchNote)
+router.patch('/notes/:id', sessionIsAuthenticated, uploadImageS3, patchNote)
 
 router.delete('/notes/:id', sessionIsAuthenticated, deleteNote);
 

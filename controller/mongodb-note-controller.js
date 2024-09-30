@@ -123,7 +123,9 @@ const patchNote = async (req, res) => {
     };
 
     if (req.file?.key) {
-      updateData.image = req.file.key;
+      updateData.image = req.file?.key;
+    } else {
+      updateData.image = '';
     }
 
     const result = await mongoDb.getDb().collection('notes').updateOne(
@@ -135,7 +137,9 @@ const patchNote = async (req, res) => {
       return res.status(404).json({ message: `No document found with id ${id}` });
     }
 
-    await deleteImageFromS3(existingImage);
+    if (existingImage) {
+      await deleteImageFromS3(existingImage);
+    }
     res.json({ editedId: id });
   } catch (error) {
     console.error(error);
