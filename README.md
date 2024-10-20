@@ -96,14 +96,16 @@ This project is the backend for the j-jandy.com application. It handles user aut
 
 - Description: Create note.
 - Request Body:
-  ```json
-  {
-    "title": "Note title",
-    "image": "Image URL",
-    "description": "Note description",
-    "name": "User name"
-  }
-  ```
+
+```json
+{
+  "title": "Note title",
+  "image": "Image URL",
+  "description": "Note description",
+  "name": "User name"
+}
+```
+
 - Response:
 
 ```json
@@ -116,14 +118,16 @@ This project is the backend for the j-jandy.com application. It handles user aut
 
 - Description: Edit note.
 - Request Body:
-  ```json
-  {
-    "title": "Note title",
-    "image": "Image URL",
-    "description": "Note description",
-    "name": "User name"
-  }
-  ```
+
+```json
+{
+  "title": "Note title",
+  "image": "Image URL",
+  "description": "Note description",
+  "name": "User name"
+}
+```
+
 - Response:
 
 ```json
@@ -158,12 +162,14 @@ This project is the backend for the j-jandy.com application. It handles user aut
 
 - Description: login request
 - Request Body:
-  ```json
-  {
-    "id": "User id",
-    "pw": "User password"
-  }
-  ```
+
+```json
+{
+  "id": "User id",
+  "pw": "User password"
+}
+```
+
 - Response:
 
 ```json
@@ -187,14 +193,16 @@ This project is the backend for the j-jandy.com application. It handles user aut
 
 - Description: regist request
 - Request Body:
-  ```json
-  {
-    "user_id": "User id",
-    "user_pw": "User password",
-    "name": "User name",
-    "email": "User email"
-  }
-  ```
+
+```json
+{
+  "user_id": "User id",
+  "user_pw": "User password",
+  "name": "User name",
+  "email": "User email"
+}
+```
+
 - Response:
 
 ```json
