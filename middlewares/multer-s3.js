@@ -55,18 +55,25 @@ const upload = multer({
 
 const uploadImageS3 = upload.single('image');
 
-async function deleteImageFromS3(key) {
-  const deleteParams = {
-    Bucket: process.env.AWS_S3_BUCKET_NAME,
-    Key: key,
-  };
-
+async function deleteImageFromS3(req, res, next) {
+  const key = req.imageKeyToDelete;
+  if (!key) {
+    return next();
+  }
   try {
+    const deleteParams = {
+      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Key: key,
+    };
     const data = await s3.send(new DeleteObjectCommand(deleteParams));
+
   } catch (err) {
     console.error('Error deleting file:', err);
-    throw new Error('Failed to delete file from S3');
+
+    return next(new Error('Failed to delete file from S3'));
   }
+  console.log('delete image');
+  next();
 }
 
 export { uploadImageS3, deleteImageFromS3 };

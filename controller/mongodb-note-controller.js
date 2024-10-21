@@ -1,6 +1,5 @@
 import mongoDb from '../data/mongodb.js';
 import { ObjectId } from 'mongodb';
-import { deleteImageFromS3 } from '../middlewares/multer-s3.js';
 
 const getNotes = async (req, res) => {
   try {
@@ -22,7 +21,7 @@ const getNotes = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Failed to retrieve notes.' });
+    return res.status(500).json({ message: 'Failed to retrieve notes.' });
   }
 }
 
@@ -55,7 +54,8 @@ const getNotesSearch = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Failed to search notes.' });
+
+    return res.status(500).json({ message: 'Failed to search notes.' });
   }
 }
 
@@ -79,11 +79,12 @@ const getNote = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Failed to retrieve note.' });
+
+    return res.status(500).json({ message: 'Failed to retrieve note.' });
   }
 }
 
-const postNote = async (req, res) => {
+const postNote = async (req, res, next) => {
   const data = req.body;
   const imageFile = req.file?.key;
 
@@ -100,14 +101,17 @@ const postNote = async (req, res) => {
       return res.status(500).json({ message: "Failed to insert the document" });
     }
 
-    res.json({ insertedId: result.insertedId });
+    req.responseData = { insertedId: result.insertedId };
+
+    next();
   } catch {
     console.error(error);
-    res.status(500).json({ message: "An error occurred while inserting the document" });
+
+    return res.status(500).json({ message: "An error occurred while inserting the document" });
   }
 }
 
-const patchNote = async (req, res) => {
+const patchNote = async (req, res, next) => {
   const data = req.body;
   const id = req.params.id;
 
@@ -138,16 +142,20 @@ const patchNote = async (req, res) => {
     }
 
     if (existingImage) {
-      await deleteImageFromS3(existingImage);
+      req.imageKeyToDelete = existingImage;
     }
-    res.json({ editedId: id });
+
+    req.responseData = { editedId: id };
+
+    next();
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Failed to update the document' });
+
+    return res.status(500).json({ message: 'Failed to update the document' });
   }
 }
 
-const deleteNote = async (req, res) => {
+const deleteNote = async (req, res, next) => {
   const id = req.params.id;
 
   try {
@@ -166,13 +174,16 @@ const deleteNote = async (req, res) => {
     }
 
     if (note.image) {
-      await deleteImageFromS3(note.image);
+      req.imageKeyToDelete = note.image;
     }
 
-    res.json({ deleteId: id });
+    req.responseData = { deleteId: id };
+
+    next();
   } catch (error) {
     console.error('Failed to delete note:', error);
-    res.status(500).json({ message: 'Failed to delete note' });
+
+    return res.status(500).json({ message: 'Failed to delete note' });
   }
 }
 
