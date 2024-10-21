@@ -72,7 +72,6 @@ async function deleteImageFromS3(req, res, next) {
 
     return next(new Error('Failed to delete file from S3'));
   }
-  console.log('delete image');
   next();
 }
 

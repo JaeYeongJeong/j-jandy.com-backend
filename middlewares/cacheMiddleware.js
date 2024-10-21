@@ -17,7 +17,6 @@ const cacheNotes = (req, res, next) => {
       cache.set(key, body);
       res.sendResponse(body);
     };
-    console.log('set cache');
   } catch (error) {
     console.error(error);
   }
@@ -27,13 +26,11 @@ const cacheNotes = (req, res, next) => {
 const updateNotesCache = (req, res, next) => {
   const key = 'note';
   try {
-    console.log('delete cache');
     cache.del(key);
-    console.log(req.responseData);
-    res.json(req.responseData);
   } catch (error) {
     console.error(error);
   }
+  next();
 }
 
 export { cacheNotes, updateNotesCache };
