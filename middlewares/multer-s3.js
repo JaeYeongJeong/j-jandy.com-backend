@@ -1,9 +1,9 @@
-import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, DeleteObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import multer from 'multer';
-import multerS3 from 'multer-s3';
-import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import sharp from 'sharp';
+import { v4 as uuidv4 } from 'uuid';
 
 if (fs.existsSync('.env')) {
   dotenv.config();
@@ -18,31 +18,12 @@ const s3 = new S3Client({
 });
 
 const convertSafeFilename = (filename) => {
-  filename = filename.replace(/ /g, "");
-  filename = filename.replace(/#/g, "");
-  filename = filename.replace(/\?/g, "");
-  filename = filename.replace(/&/g, "");
-  filename = filename.replace(/=/g, "");
-  filename = filename.replace(/\+/g, "");
-
-  return filename;
-}
+  return filename.replace(/ /g, "").replace(/#/g, "").replace(/\?/g, "").replace(/&/g, "").replace(/=/g, "").replace(/\+/g, "");
+};
 
 
 const upload = multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: process.env.AWS_S3_BUCKET_NAME,
-    metadata: (req, file, cb) => {
-      cb(null, { fieldName: file.fieldname });
-    },
-    key: (req, file, cb) => {
-      const ext = path.extname(file.originalname);
-      const filename = `${Date.now().toString()}${path.basename(file.originalname, ext)}${ext}`;
-      const safeFilename = convertSafeFilename(filename);
-      cb(null, `uploads/${safeFilename}`);
-    },
-  }),
+  storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
     if (allowedMimeTypes.includes(file.mimetype)) {
@@ -53,7 +34,38 @@ const upload = multer({
   },
 });
 
-const uploadImageS3 = upload.single('image');
+const uploadImageS3 = (req, res, next) => {
+  const uploadMiddleware = upload.single('image');
+  uploadMiddleware(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    if (req.file) {
+      try {
+        const compressedImageBuffer = await sharp(req.file.buffer)
+          .jpeg({ quality: 80 })
+          .toBuffer();
+
+        const ext = '.png';
+        const filename = `${uuidv4()}${ext}`;
+        const safeFilename = convertSafeFilename(filename);
+
+        await s3.send(new PutObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Key: `uploads/${safeFilename}`,
+          Body: compressedImageBuffer,
+          ContentType: 'image/jpeg',
+        }));
+        req.file.key = `uploads/${safeFilename}`;
+        next();
+      } catch (compressErr) {
+        return res.status(500).json({ error: 'Failed to compress and upload image' });
+      }
+    } else {
+      next(); // no image file
+    }
+  });
+};
 
 async function deleteImageFromS3(req, res, next) {
   const key = req.imageKeyToDelete;
@@ -65,14 +77,12 @@ async function deleteImageFromS3(req, res, next) {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
       Key: key,
     };
-    const data = await s3.send(new DeleteObjectCommand(deleteParams));
-
+    await s3.send(new DeleteObjectCommand(deleteParams));
+    next();
   } catch (err) {
     console.error('Error deleting file:', err);
-
     return next(new Error('Failed to delete file from S3'));
   }
-  next();
 }
 
 export { uploadImageS3, deleteImageFromS3 };

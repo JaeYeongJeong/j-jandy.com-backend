@@ -102,7 +102,6 @@ const postNote = async (req, res, next) => {
     }
 
     req.responseData = { insertedId: result.insertedId };
-
     next();
   } catch {
     console.error(error);
