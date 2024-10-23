@@ -8,7 +8,7 @@ const cacheNotes = (req, res, next) => {
     const notes = cache.get(key);
 
     if (notes) {
-      return res.json(notes);
+      return res.status(200).json(notes);
     }
 
     res.sendResponse = res.json;
