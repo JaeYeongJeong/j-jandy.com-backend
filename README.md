@@ -31,31 +31,31 @@ This project is the backend for the j-jandy.com application. It handles user aut
 4. 환경 변수 설정.
 
 ```markdown
-- `PROTOCAL`: http 또는 https
-- `SSL_KEY`: ssl인증서 경로 (https 설정시 필수)
-- `SSL_CERT`: ssl인증서 경로 (https 설정시 필수)
-- `PORT`: 서버가 실행될 포트
-- `FRONTEND_URL`: 프론트엔드 URL을 지정
+PROTOCAL: http 또는 https
+SSL_KEY: ssl인증서 경로 (https 설정시 필수)
+SSL_CERT: ssl인증서 경로 (https 설정시 필수)
+PORT: 서버가 실행될 포트
+FRONTEND_URL: 프론트엔드 URL을 지정
 
 # MongoDB & 세션 설정
 
-- `MONGODB_URL`: MongoDB 데이터베이스 URL
-- `DB_PASSWORD`: 데이터베이스 비밀번호
-- `SESSION_SECRET`: 세션 암호화에 사용되는 비밀키
+MONGODB_URL: MongoDB 데이터베이스 URL
+DB_PASSWORD: 데이터베이스 비밀번호
+SESSION_SECRET: 세션 암호화에 사용되는 비밀키
 
 # AWS S3 설정
 
-- `AWS_ACCESS_KEY_ID`: AWS S3 액세스 키
-- `AWS_SECRET_ACCESS_KEY`: AWS S3 비밀 액세스 키
-- `AWS_REGION`: AWS S3 리전
-- `AWS_S3_BUCKET_NAME`: S3 버킷 이름
+AWS_ACCESS_KEY_ID: AWS S3 액세스 키
+AWS_SECRET_ACCESS_KEY: AWS S3 비밀 액세스 키
+AWS_REGION: AWS S3 리전
+AWS_S3_BUCKET_NAME: S3 버킷 이름
 ```
 
 ## 기술 스택
 
 ```markdown
-- _Backend:_ Express, Node.js, MongoDB
-- _Cloud:_ AWS EC2
+- Backend: Express, Node.js, MongoDB
+- Cloud: AWS EC2
 ```
 
 ## API 명세
