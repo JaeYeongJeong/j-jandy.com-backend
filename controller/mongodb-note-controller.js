@@ -102,6 +102,7 @@ const postNote = async (req, res, next) => {
     }
 
     req.responseData = { insertedId: result.insertedId };
+    req.status = 201;
     next();
   } catch {
     console.error(error);
@@ -144,6 +145,7 @@ const patchNote = async (req, res, next) => {
       req.imageKeyToDelete = existingImage;
     }
 
+    req.status = 200;
     req.responseData = { editedId: id };
 
     next();

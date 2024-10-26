@@ -42,24 +42,21 @@ app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
 
-//conncet mongoDb
 await mongoDb.connectMongoDb().then(() => {
   app.use(authRoutes);
   app.use(noteRoutes);
 
-  if (process.env.MODE === 'development') {
-    // 개발 환경
+  if (process.env.PROTOCAL === 'https') {
     const options = {
-      key: fs.readFileSync('../localhost-key.pem'),
-      cert: fs.readFileSync('../localhost.pem'),
+      key: fs.readFileSync(process.env.SSL_KEY),
+      cert: fs.readFileSync(process.env.SSL_CERT),
     };
     https.createServer(options, app).listen(PORT, () => {
       console.log(`HTTPS server started on port ${PORT}`);
     });
   } else {
-    // 배포 환경
     app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+      console.log(`HTTP Server is running on port ${PORT}`);
     });
   }
 });
