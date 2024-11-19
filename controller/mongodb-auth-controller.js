@@ -85,6 +85,7 @@ const postRegist = async (req, res) => {
       user_pw: hashedPassword,
       name,
       email,
+      role: 'member',
     });
 
     if (!result.insertedId) {

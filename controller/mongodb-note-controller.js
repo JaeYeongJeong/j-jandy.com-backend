@@ -95,6 +95,7 @@ const postNote = async (req, res, next) => {
       image: imageFile,
       date: new Date(),
       name: req.session.user.name,
+      user: req.session.user.id,
     });
 
     if (!result.acknowledged) {
@@ -112,17 +113,25 @@ const postNote = async (req, res, next) => {
 }
 
 const patchNote = async (req, res, next) => {
-  const data = req.body;
-  const id = req.params.id;
-
   try {
-    const existingNote = await mongoDb.getDb().collection('notes').findOne({ _id: new ObjectId(req.params.id) });
+    const noteId = req.params.id;
+    const userId = req.session.user.id;
+    const data = req.body;
+
+    const existingNote = await mongoDb.getDb().collection('notes').findOne({ _id: new ObjectId(noteId) });
+
+    const user = await mongoDb.getDb().collection('users').findOne({ user_id: userId });
+
+    if (user?.role !== 'master' && existingNote.user !== userId) {
+      return res.status(403).json({ message: `No authorization` });
+    }
+
     const existingImage = existingNote?.image;
 
     const updateData = {
+      ...existingNote,
       title: data.title,
       description: data.description,
-      name: req.session.user.name,
       date: new Date(),
     };
 
@@ -133,12 +142,12 @@ const patchNote = async (req, res, next) => {
     }
 
     const result = await mongoDb.getDb().collection('notes').updateOne(
-      { _id: new ObjectId(id) },
+      { _id: new ObjectId(noteId) },
       { $set: updateData }
     );
 
     if (result.matchedCount === 0) {
-      return res.status(404).json({ message: `No document found with id ${id}` });
+      return res.status(404).json({ message: `No document found with id ${noteId}` });
     }
 
     if (existingImage) {
@@ -146,7 +155,7 @@ const patchNote = async (req, res, next) => {
     }
 
     req.status = 200;
-    req.responseData = { editedId: id };
+    req.responseData = { editedId: noteId };
 
     next();
   } catch (error) {
@@ -157,18 +166,26 @@ const patchNote = async (req, res, next) => {
 }
 
 const deleteNote = async (req, res, next) => {
-  const id = req.params.id;
-
   try {
-    const objectId = new ObjectId(id);
+    const noteId = req.params.id;
+    const objectNoteId = new ObjectId(noteId);
+    const userId = req.session.user.id;
 
-    const note = await mongoDb.getDb().collection('notes').findOne({ _id: objectId });
+    const note = await mongoDb.getDb().collection('notes').findOne({ _id: objectNoteId });
+
+    const user = await mongoDb.getDb().collection('users').findOne({
+      user_id: userId
+    });
 
     if (!note) {
-      return res.status(404).json({ message: `No note found with id ${id}` });
+      return res.status(404).json({ message: `No note found.` });
     }
 
-    const result = await mongoDb.getDb().collection('notes').deleteOne({ _id: objectId });
+    if (user?.role !== 'master' && note.user !== userId) {
+      return res.status(403).json({ message: `No authorization.` });
+    }
+
+    const result = await mongoDb.getDb().collection('notes').deleteOne({ _id: objectNoteId });
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ message: 'No document was deleted' });
@@ -178,7 +195,7 @@ const deleteNote = async (req, res, next) => {
       req.imageKeyToDelete = note.image;
     }
 
-    req.responseData = { deleteId: id };
+    req.responseData = { deleteId: noteId };
 
     next();
   } catch (error) {
