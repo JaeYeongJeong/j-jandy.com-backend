@@ -17,6 +17,7 @@ const getNotes = async (req, res) => {
         description: note.description,
         image: note.image,
         name: note.name,
+        user: note.user,
       }))
     });
   } catch (error) {
