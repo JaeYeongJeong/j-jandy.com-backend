@@ -31,7 +31,7 @@ const postLogin = async (req, res) => {
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
-    req.session.user = { id: user.user_id, name: user.name };
+    req.session.user = { id: user.user_id, name: user.name, role: user.role };
     req.session.isAuthenticated = true;
 
     req.session.save((err) => {
